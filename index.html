@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lista de Compras</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #05070d 0%, #111827 100%);
+      color: #ffffff;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1, h2 {
+      margin-top: 0;
+      color: #4db8ff;
+    }
+    .subtitle {
+      color: #cbd5e1;
+      margin-bottom: 18px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 18px;
+    }
+    .card {
+      background: rgba(17, 24, 39, 0.95);
+      border: 1px solid rgba(77, 184, 255, 0.28);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 0 18px rgba(77, 184, 255, 0.08);
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      color: #4db8ff;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 12px;
+      border-radius: 12px;
+      border: 1px solid #334155;
+      background: #0b1220;
+      color: #fff;
+      font-size: 15px;
+    }
+    button {
+      background: linear-gradient(180deg, #4db8ff 0%, #9b111e 100%);
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      transition: .2s ease;
+    }
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 12px rgba(155, 17, 30, 0.55);
+    }
+    .secondary {
+      background: #0b1220;
+      border: 1px solid #4db8ff;
+      color: #4db8ff;
+    }
+    .danger {
+      background: #9b111e;
+      color: #fff;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .stat {
+      background: #0b1220;
+      border: 1px solid rgba(77, 184, 255, 0.22);
+      border-radius: 14px;
+      padding: 14px;
+      text-align: center;
+    }
+    .stat strong {
+      display: block;
+      font-size: 24px;
+      color: #4db8ff;
+      margin-bottom: 4px;
+    }
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr 180px 180px;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .list {
+      display: grid;
+      gap: 12px;
+    }
+    .item {
+      background: #0b1220;
+      border: 1px solid rgba(77, 184, 255, 0.2);
+      border-radius: 16px;
+      padding: 14px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+    .item.comprado {
+      opacity: 0.72;
+      border-color: rgba(34, 197, 94, 0.35);
+    }
+    .item.comprado .nome-item {
+      text-decoration: line-through;
+    }
+    .check {
+      width: 22px;
+      height: 22px;
+      accent-color: #4db8ff;
+      cursor: pointer;
+    }
+    .nome-item {
+      font-size: 18px;
+      font-weight: bold;
+      color: #ffffff;
+    }
+    .meta {
+      color: #cbd5e1;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+    .price {
+      color: #4db8ff;
+      font-weight: bold;
+      font-size: 18px;
+    }
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .actions button {
+      width: auto;
+      margin-bottom: 0;
+      padding: 9px 12px;
+      font-size: 13px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: rgba(77, 184, 255, 0.14);
+      color: #4db8ff;
+      border: 1px solid rgba(77, 184, 255, 0.22);
+      margin-right: 6px;
+    }
+    .empty {
+      text-align: center;
+      color: #94a3b8;
+      padding: 26px 12px;
+      border: 1px dashed #334155;
+      border-radius: 14px;
+    }
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+      .toolbar { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: 1fr; }
+      .item { grid-template-columns: auto 1fr; }
+      .item > div:last-child { grid-column: 1 / -1; }
+    }
+    @media print {
+      body { background: #fff; color: #000; }
+      .card, .item, .stat { background: #fff; color: #000; box-shadow: none; }
+      button, .toolbar, .check { display: none !important; }
+      .nome-item, .price, h1, h2 { color: #000 !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Lista de Compras</h1>
+    <div class="subtitle">Cadastre itens, quantidades, categorias, valores e marque o que já foi comprado.</div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>Novo Item</h2>
+        <label>Nome do produto</label>
+        <input id="nome" type="text" placeholder="Ex: Arroz" />
+
+        <label>Categoria</label>
+        <select id="categoria">
+          <option value="Alimentos">Alimentos</option>
+          <option value="Bebidas">Bebidas</option>
+          <option value="Limpeza">Limpeza</option>
+          <option value="Higiene">Higiene</option>
+          <option value="Figurino">Figurino</option>
+          <option value="Outros">Outros</option>
+        </select>
+
+        <label>Quantidade</label>
+        <input id="quantidade" type="number" min="1" value="1" />
+
+        <label>Valor unitário (R$)</label>
+        <input id="valor" type="number" min="0" step="0.01" placeholder="0.00" />
+
+        <label>Observação</label>
+        <input id="obs" type="text" placeholder="Ex: marca preferida" />
+
+        <button onclick="adicionarItem()">Adicionar à lista</button>
+        <button class="secondary" onclick="limparFormulario()">Limpar</button>
+        <button class="secondary" onclick="window.print()">Exportar PDF</button>
+      </div>
+
+      <div class="card">
+        <div class="stats">
+          <div class="stat"><strong id="totalItens">0</strong>Total de itens</div>
+          <div class="stat"><strong id="comprados">0</strong>Comprados</div>
+          <div class="stat"><strong id="valorTotal">R$ 0,00</strong>Total estimado</div>
+        </div>
+
+        <div class="toolbar">
+          <input id="busca" type="text" placeholder="Pesquisar item..." oninput="renderLista()" />
+          <select id="filtroCategoria" onchange="renderLista()">
+            <option value="Todos">Todas categorias</option>
+            <option value="Alimentos">Alimentos</option>
+            <option value="Bebidas">Bebidas</option>
+            <option value="Limpeza">Limpeza</option>
+            <option value="Higiene">Higiene</option>
+            <option value="Figurino">Figurino</option>
+            <option value="Outros">Outros</option>
+          </select>
+          <select id="filtroStatus" onchange="renderLista()">
+            <option value="Todos">Todos</option>
+            <option value="Pendentes">Pendentes</option>
+            <option value="Comprados">Comprados</option>
+          </select>
+        </div>
+
+        <div class="actions" style="margin-bottom: 14px;">
+          <button class="secondary" onclick="marcarTodos(true)">Marcar todos</button>
+          <button class="secondary" onclick="marcarTodos(false)">Desmarcar todos</button>
+          <button class="danger" onclick="limparComprados()">Remover comprados</button>
+        </div>
+
+        <div id="lista" class="list"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const CHAVE = 'lista_compras_edy_v1';
+    let itens = [];
+
+    function salvar() {
+      localStorage.setItem(CHAVE, JSON.stringify(itens));
+      renderLista();
+      atualizarResumo();
+    }
+
+    function carregar() {
+      const dados = localStorage.getItem(CHAVE);
+      if (dados) {
+        try { itens = JSON.parse(dados); } catch { itens = []; }
+      }
+      renderLista();
+      atualizarResumo();
+    }
+
+    function formatarMoeda(valor) {
+      return Number(valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function limparFormulario() {
+      document.getElementById('nome').value = '';
+      document.getElementById('categoria').value = 'Alimentos';
+      document.getElementById('quantidade').value = 1;
+      document.getElementById('valor').value = '';
+      document.getElementById('obs').value = '';
+    }
+
+    function adicionarItem() {
+      const nome = document.getElementById('nome').value.trim();
+      const categoria = document.getElementById('categoria').value;
+      const quantidade = Number(document.getElementById('quantidade').value || 0);
+      const valor = Number(document.getElementById('valor').value || 0);
+      const obs = document.getElementById('obs').value.trim();
+
+      if (!nome) {
+        alert('Digite o nome do produto.');
+        return;
+      }
+      if (quantidade <= 0) {
+        alert('Digite uma quantidade válida.');
+        return;
+      }
+
+      itens.push({
+        id: Date.now().toString(),
+        nome,
+        categoria,
+        quantidade,
+        valor,
+        obs,
+        comprado: false,
+        criadoEm: new Date().toLocaleDateString('pt-BR')
+      });
+
+      salvar();
+      limparFormulario();
+    }
+
+    function atualizarResumo() {
+      const totalItens = itens.length;
+      const comprados = itens.filter(i => i.comprado).length;
+      const valorTotal = itens.reduce((s, i) => s + (i.quantidade * i.valor), 0);
+
+      document.getElementById('totalItens').textContent = totalItens;
+      document.getElementById('comprados').textContent = comprados;
+      document.getElementById('valorTotal').textContent = formatarMoeda(valorTotal);
+    }
+
+    function toggleComprado(id) {
+      itens = itens.map(item => item.id === id ? { ...item, comprado: !item.comprado } : item);
+      salvar();
+    }
+
+    function excluirItem(id) {
+      if (!confirm('Deseja excluir este item?')) return;
+      itens = itens.filter(item => item.id !== id);
+      salvar();
+    }
+
+    function marcarTodos(status) {
+      itens = itens.map(item => ({ ...item, comprado: status }));
+      salvar();
+    }
+
+    function limparComprados() {
+      if (!confirm('Deseja remover todos os itens comprados?')) return;
+      itens = itens.filter(item => !item.comprado);
+      salvar();
+    }
+
+    function renderLista() {
+      const lista = document.getElementById('lista');
+      const busca = document.getElementById('busca').value.toLowerCase().trim();
+      const categoria = document.getElementById('filtroCategoria').value;
+      const status = document.getElementById('filtroStatus').value;
+
+      const filtrados = itens.filter(item => {
+        const bateBusca = item.nome.toLowerCase().includes(busca) || item.obs.toLowerCase().includes(busca);
+        const bateCategoria = categoria === 'Todos' || item.categoria === categoria;
+        const bateStatus = status === 'Todos' || (status === 'Comprados' && item.comprado) || (status === 'Pendentes' && !item.comprado);
+        return bateBusca && bateCategoria && bateStatus;
+      });
+
+      if (!filtrados.length) {
+        lista.innerHTML = '<div class="empty">Nenhum item encontrado na lista.</div>';
+        return;
+      }
+
+      lista.innerHTML = filtrados.slice().reverse().map(item => {
+        const total = item.quantidade * item.valor;
+        return `
+          <div class="item ${item.comprado ? 'comprado' : ''}">
+            <input class="check" type="checkbox" ${item.comprado ? 'checked' : ''} onchange="toggleComprado('${item.id}')" />
+            <div>
+              <div class="nome-item">${item.nome}</div>
+              <div class="meta">
+                <span class="badge">${item.categoria}</span>
+                Quantidade: ${item.quantidade}
+                ${item.obs ? ' • ' + item.obs : ''}
+                • Adicionado em ${item.criadoEm}
+              </div>
+              <div class="actions">
+                <button class="danger" onclick="excluirItem('${item.id}')">Excluir</button>
+              </div>
+            </div>
+            <div class="price">${formatarMoeda(total)}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    carregar();
+  </script>
+</body>
+</html>
